@@ -1,0 +1,24 @@
+{
+  "length": {
+    "centimetersToMeters": 0.01,
+    "metersToCentimeters": 100,
+    "metersToKilometers": 0.001,
+    "kilometersToMeters": 1000
+  },
+  "weight": {
+    "gramsToKilograms": 0.001,
+    "kilogramsToGrams": 1000,
+    "poundsToKilograms": 0.453592,
+    "kilogramsToPounds": 2.20462
+  },
+  "volume": {
+    "millilitersToLiters": 0.001,
+    "litersToMilliliters": 1000,
+    "litersToGallons": 0.264172,
+    "gallonsToLiters": 3.78541
+  },
+  "temperature": {
+    "celsiusToFahrenheit": "function(celsius) { return (celsius * 9/5) + 32; }",
+    "fahrenheitToCelsius": "function(fahrenheit) { return (fahrenheit - 32) * 5/9; }"
+  }
+}
