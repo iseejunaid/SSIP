@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity} from 'react-native';
 import CustomModal from './Modal';
+import conversionFactors from '../helpers/conversionFactors.json'
 
-const Screen1Labels = ({ label,data,isTouchable,labelModal}) => {
+const Screen1Labels = ({ label, isTouchable, unit, setSelected }) => {
   const [text, setText] = useState('0');
-  
-  const toggleLabelModal = () => {
+  const [isModalVisible, setModalVisible] = useState(false);
+  const isFirstRender = useRef(true);
+
+  const factors = conversionFactors[unit];
+  const data = Object.keys(factors);
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
   };
-  
+
+  useEffect(() => {
+    if (!isFirstRender.current) {
+      if (isTouchable) {
+        toggleModal();
+      }
+    } else {
+      isFirstRender.current = false;
+    }
+  }, [unit]);
+
   return (
     <View style={styles.container}>
       {isTouchable ? (
-        <TouchableOpacity style={styles.labelButton} onPress={() => setLabelModal(true)}>
+        <TouchableOpacity
+          style={styles.labelButton}
+          onPress={toggleModal}
+        >
           <Text style={styles.label}>{label}</Text>
         </TouchableOpacity>
       ) : (
@@ -25,7 +45,15 @@ const Screen1Labels = ({ label,data,isTouchable,labelModal}) => {
         placeholderTextColor="white"
         keyboardType="numeric"
       />
-      <CustomModal isModalVisible={labelModal} toggleModal={toggleLabelModal} headingText = 'Select' data={data}/>
+      {isTouchable ? (
+        <CustomModal
+          isModalVisible={isModalVisible}
+          toggleModal={toggleModal}
+          headingText="Type"
+          data={data}
+          setSelected={setSelected}
+        />
+      ) : null}
     </View>
   );
 };

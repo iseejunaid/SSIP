@@ -11,6 +11,7 @@ const Header = ({ unit, setUnit }) => {
     };
     const conversionHeadings = Object.keys(conversionFactors);
 
+
     return (
         <View style={styles.header}>
             <TouchableOpacity
@@ -25,7 +26,7 @@ const Header = ({ unit, setUnit }) => {
             toggleModal={toggleModal} 
             headingText = 'Conversions'
             data = {conversionHeadings}
-            setUnit= {setUnit} />
+            setSelected= {setUnit} />
         </View>
     );
 };

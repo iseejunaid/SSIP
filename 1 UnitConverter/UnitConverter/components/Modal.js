@@ -1,10 +1,10 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
 
-const CustomModal = ({ isModalVisible, toggleModal,headingText, data, setUnit }) => {
+const CustomModal = ({ isModalVisible, toggleModal,headingText, data, setSelected }) => {
 
     const selectUnitHandler = (unit) => {
-        setUnit(unit);
+        setSelected(unit);
         toggleModal();
     };
     
