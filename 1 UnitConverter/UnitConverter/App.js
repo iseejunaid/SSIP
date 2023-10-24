@@ -2,43 +2,84 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import conversionFactors from './helpers/conversionFactors.json';
-import Screen1Labels from './components/Screen1Labels';
+import Screen1Label1 from './components/Screen1Label1';
+import Screen1Label2 from './components/Screen1Label2'
 import ConversionInfo from './components/ConversionInfo';
 import Header from './components/header';
-// done most of work, modify labels when clicked and also value
+
 export default function App() {
   const [unit, setUnit] = useState('weight');
   const [label1, setLabel1] = useState('gram');
   const [label2, setLabel2] = useState('kilogram');
+  const [label1Value, setLabel1Value] = useState(0);
+  const [label2Value, setLabel2Value] = useState(0);
   const [value, setValue] = useState(0.001);
   const [displayValue, setDisplayValue] = useState(true);
   const [selectedLabel, setSelectedLabel] = useState('gramsToKilograms');
 
+  // Handle changes to selectedLabel and update label1 and label2
   useEffect(() => {
     const indexOfTo = selectedLabel.indexOf("To");
     if (indexOfTo !== -1) {
       setLabel1(selectedLabel.slice(0, indexOfTo));
       setLabel2(selectedLabel.slice(indexOfTo + 2).toLowerCase());
     }
+  }, [selectedLabel]);
+
+  // Handle changes to unit and selectedLabel and update value and displayValue
+  useEffect(() => {
     if (conversionFactors[unit] && conversionFactors[unit][selectedLabel]) {
-      const value = conversionFactors[unit][selectedLabel];
-      if(unit === 'temperature'){
+      const factor = conversionFactors[unit][selectedLabel];
+      if (unit === 'temperature') {
         setDisplayValue(false);
-      }else{
+      } else {
         setDisplayValue(true);
       }
-      setValue(value);
+      setValue(factor);
     } else {
       console.log("unit or label not found in JSON.");
     }
-  }, [selectedLabel]);
+  }, [unit]);
 
   const ReverseButtonHandler = () => {
-    setSelectedLabel(label2+"To"+label1.charAt(0).toUpperCase() + label1.slice(1));
-    setLabel1(label2);
-    setLabel2(label1);
+    console.log("Reverse button pressed");
+    setSelectedLabel(label2 + "To" + label1.charAt(0).toUpperCase() + label1.slice(1));
   }
-  
+
+  // Calculate label2Value when label1Value changes
+  useEffect(() => {
+    if (label1Value !== 0) {
+      if (label1 === 'celsius' && label2 === 'fahrenheit') {
+        calculatedValue = (label1Value * 9/5) + 32;
+      } else if (label1 === 'fahrenheit' && label2 === 'celsius') {
+        calculatedValue = (label1Value - 32) * 5/9;
+      } else {
+        calculatedValue = label1Value * value;
+      }
+    } else {
+      calculatedValue = 0;
+    }
+  }, [label1, label2, value]);
+// im working here in these two useeffects
+  // Calculate label1Value when label2Value changes
+  useEffect(() => {
+    if (label2Value !== 0) {
+      let calculatedValue = label2Value;
+
+      if (label1 === 'fahrenheit' && label2 === 'celsius') {
+        calculatedValue = (label2Value - 32) * 5/9;
+      } else if (label1 === 'celsius' && label2 === 'fahrenheit') {
+        calculatedValue = (label2Value * 9/5) + 32;
+      } else {
+        calculatedValue = label2Value / value;
+      }
+
+      setLabel1Value(calculatedValue);
+    } else {
+      setLabel1Value(0);
+    }
+    console.log("label1Value: " + label1Value);
+  }, [label2Value, label1, label2, value]);
 
   return (
     <View style={styles.container}>
@@ -46,30 +87,28 @@ export default function App() {
 
       <Header unit={unit} setUnit={setUnit} />
 
-      <Screen1Labels
+      <Screen1Label1
         label={label1}
-        unit = {unit}
-        value={value}
-        isTouchable={true}
-        setSelected={setSelectedLabel}/>
-
+        unit={unit}
+        value={label1Value}
+        setValue={setLabel1Value}
+        setSelected={setSelectedLabel}
+      />
 
       <View style={styles.SwitchIconContainer}>
         <TouchableOpacity
-        onPress={ReverseButtonHandler}>
-        <MaterialCommunityIcons name="compare-vertical" size={40} color="white" />
+          onPress={ReverseButtonHandler}>
+          <MaterialCommunityIcons name="compare-vertical" size={40} color="white" />
         </TouchableOpacity>
       </View>
 
-      <Screen1Labels
+      <Screen1Label2
         label={label2}
-        isTouchable={false}
-        unit = {unit}
+        value={label2Value}
+        setValue={setLabel2Value}
       />
-      {
-        displayValue && <ConversionInfo unit1={label1} value={value} unit2={label2} />
-      }
 
+      {displayValue && <ConversionInfo unit1={label1} value={value} unit2={label2} />}
     </View>
   );
 }
