@@ -1,38 +1,38 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import CustomModal from './Modal';
-import conversionFactors from '../helpers/conversionFactors.json'
+import conversionFactors from '../helpers/conversionFactors.json';
 
 const Screen1Label1 = ({ label, unit, setSelected, value, setValue }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const isFirstRender = useRef(true);
   const factors = conversionFactors[unit];
   const data = Object.keys(factors);
+  const textInputRef = useRef(null); // Create a reference for the TextInput
 
-
-  console.log('Value in Screen1Label1',value)
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
+
   useEffect(() => {
     if (!isFirstRender.current) {
       toggleModal();
     } else {
       isFirstRender.current = false;
     }
+    textInputRef.current.focus();
   }, [unit]);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.labelButton}
-        onPress={toggleModal}>
+      <TouchableOpacity style={styles.labelButton} onPress={toggleModal}>
         <Text style={styles.label}>{label}</Text>
       </TouchableOpacity>
 
       <TextInput
         style={styles.valueInput}
-        // value={value.toString()}
+        ref={textInputRef} // Assign the ref to the TextInput
+        value={value.toString()}
         onChangeText={setValue}
         placeholder="0"
         placeholderTextColor="white"
@@ -43,7 +43,8 @@ const Screen1Label1 = ({ label, unit, setSelected, value, setValue }) => {
         toggleModal={toggleModal}
         headingText="Type"
         data={data}
-        setSelected={setSelected}/>
+        setSelected={setSelected}
+      />
     </View>
   );
 };

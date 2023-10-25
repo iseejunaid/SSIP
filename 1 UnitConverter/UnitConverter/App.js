@@ -12,12 +12,11 @@ export default function App() {
   const [label1, setLabel1] = useState('gram');
   const [label2, setLabel2] = useState('kilogram');
   const [label1Value, setLabel1Value] = useState(0);
-  const [label2Value, setLabel2Value] = useState(0);
+  const [label2Value, setLabel2Value] = useState('0');
   const [value, setValue] = useState(0.001);
   const [displayValue, setDisplayValue] = useState(true);
   const [selectedLabel, setSelectedLabel] = useState('gramsToKilograms');
 
-  // Handle changes to selectedLabel and update label1 and label2
   useEffect(() => {
     const indexOfTo = selectedLabel.indexOf("To");
     if (indexOfTo !== -1) {
@@ -39,16 +38,17 @@ export default function App() {
     } else {
       console.log("unit or label not found in JSON.");
     }
-  }, [unit, selectedLabel]);
+  }, [selectedLabel]);
 
   const ReverseButtonHandler = () => {
+    setLabel1Value(0);
+    setLabel2Value(0);
     setSelectedLabel(label2 + "To" + label1.charAt(0).toUpperCase() + label1.slice(1));
   }
 
-  // Calculate label2Value when label1Value changes
   useEffect(() => {
     if (label1Value !== 0) {
-      let calculatedValue = label1Value;
+      var calculatedValue = label1Value;
 
       if (label1 === 'celsius' && label2 === 'fahrenheit') {
         calculatedValue = (label1Value * 9/5) + 32;
@@ -57,31 +57,13 @@ export default function App() {
       } else {
         calculatedValue = label1Value * value;
       }
-
+    } else {
+      calculatedValue = 0;
+    }
+    if(calculatedValue !== label2Value) {
       setLabel2Value(calculatedValue);
-    } else {
-      setLabel2Value(0);
     }
-  }, [label1Value, label1, label2, value]);
-
-  // Calculate label1Value when label2Value changes
-  useEffect(() => {
-    if (label2Value !== 0) {
-      let calculatedValue = label2Value;
-
-      if (label1 === 'fahrenheit' && label2 === 'celsius') {
-        calculatedValue = (label2Value - 32) * 5/9;
-      } else if (label1 === 'celsius' && label2 === 'fahrenheit') {
-        calculatedValue = (label2Value * 9/5) + 32;
-      } else {
-        calculatedValue = label2Value / value;
-      }
-
-      setLabel1Value(calculatedValue);
-    } else {
-      setLabel1Value(0);
-    }
-  }, [label2Value, label1, label2, value]);
+  }, [label1Value, value]);
 
   return (
     <View style={styles.container}>
@@ -106,9 +88,7 @@ export default function App() {
 
       <Screen1Label2
         label={label2}
-        value={label2Value}
-        setValue={setLabel2Value}
-      />
+        value={label2Value}/>
 
       {displayValue && <ConversionInfo unit1={label1} value={value} unit2={label2} />}
     </View>

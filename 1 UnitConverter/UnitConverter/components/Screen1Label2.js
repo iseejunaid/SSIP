@@ -1,18 +1,13 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet} from 'react-native';
 
-const Screen1Label2 = ({ label, value, setValue }) => {
+const Screen1Label2 = ({ label, value}) => {
   
   return (
     <View style={styles.container}>
     <Text style={styles.label}>{label}</Text>
-    <TextInput
-        style={styles.valueInput}
-        value={value.toString()}
-        onChangeText={setValue}
-        placeholder="0"
-        placeholderTextColor="white"
-        keyboardType="numeric"/>    
+    <Text
+        style={styles.valueInput}>{value}</Text>
     </View>
   );
 };
