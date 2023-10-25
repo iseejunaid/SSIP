@@ -39,16 +39,17 @@ export default function App() {
     } else {
       console.log("unit or label not found in JSON.");
     }
-  }, [unit]);
+  }, [unit, selectedLabel]);
 
   const ReverseButtonHandler = () => {
-    console.log("Reverse button pressed");
     setSelectedLabel(label2 + "To" + label1.charAt(0).toUpperCase() + label1.slice(1));
   }
 
   // Calculate label2Value when label1Value changes
   useEffect(() => {
     if (label1Value !== 0) {
+      let calculatedValue = label1Value;
+
       if (label1 === 'celsius' && label2 === 'fahrenheit') {
         calculatedValue = (label1Value * 9/5) + 32;
       } else if (label1 === 'fahrenheit' && label2 === 'celsius') {
@@ -56,11 +57,13 @@ export default function App() {
       } else {
         calculatedValue = label1Value * value;
       }
+
+      setLabel2Value(calculatedValue);
     } else {
-      calculatedValue = 0;
+      setLabel2Value(0);
     }
-  }, [label1, label2, value]);
-// im working here in these two useeffects
+  }, [label1Value, label1, label2, value]);
+
   // Calculate label1Value when label2Value changes
   useEffect(() => {
     if (label2Value !== 0) {
@@ -78,7 +81,6 @@ export default function App() {
     } else {
       setLabel1Value(0);
     }
-    console.log("label1Value: " + label1Value);
   }, [label2Value, label1, label2, value]);
 
   return (

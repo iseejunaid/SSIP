@@ -9,6 +9,8 @@ const Screen1Label1 = ({ label, unit, setSelected, value, setValue }) => {
   const factors = conversionFactors[unit];
   const data = Object.keys(factors);
 
+
+  console.log('Value in Screen1Label1',value)
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -30,7 +32,7 @@ const Screen1Label1 = ({ label, unit, setSelected, value, setValue }) => {
 
       <TextInput
         style={styles.valueInput}
-        value={value.toString()}
+        // value={value.toString()}
         onChangeText={setValue}
         placeholder="0"
         placeholderTextColor="white"
