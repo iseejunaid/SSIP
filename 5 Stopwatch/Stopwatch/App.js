@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { useStopwatch } from 'react-timer-hook';
 
 const TimerApp = () => {
@@ -11,71 +11,90 @@ const TimerApp = () => {
     reset,
   } = useStopwatch({ autoStart: false });
 
-  const [isLapsed, setIsLapsed] = useState(false);
-  const [lapseconds, setLapSeconds] = useState(0);
-  const [lapminutes, setLapMinutes] = useState(0);
+  const [isStart, setIsStart] = useState(false);
+  const [idindex, setIdIndex] = useState(0);
 
+  const [DATA, setData] = useState([]);
   useEffect(() => {
-    if (isLapsed) {
-      setLapSeconds(seconds);
-      setLapMinutes(minutes);
-    }
-  }, [isLapsed]);
+    
+  }, [idindex]);
 
-  const handleStart = () => {
-    if(isLapsed){
-      setIsLapsed(false);
-    }else{
+  const Item = ({ min, sec }) => {
+    return (
+      <View style={styles.item}>
+        <Text style={styles.timerText}>{min} : {sec}</Text>
+      </View>
+    );
+  };
+  
+
+  const handleStartStop = () => {
+    if(isStart){
+      setIsStart(false);
+      pause();
+    }
+    else{
+      setIsStart(true);
       start();
     }
   };
 
-  const handleStop = () => {
-    pause();
-  };
-
   const handleLap = () => {
-    setIsLapsed(!isLapsed);
+    if(isStart){
+      const newItem = {
+        id: idindex.toString(),
+        min: String(minutes).padStart(2, '0'),
+        sec: String(seconds).padStart(2, '0'),
+      };
+      setData([...DATA, newItem]);
+      setIdIndex(idindex + 1);
+    }
   };
 
   const handleReset = () => {
-    setIsLapsed(false);
-    setLapMinutes(0);
-    setLapSeconds(0);
+    setData([]);
+    setIdIndex(0);
     reset();
   };
 
   return (
     <View style={styles.container}>
     <View style={{flex:0.5,width:'100%',alignItems:'center',justifyContent:'center'}}>
-    <View style={{width:"70%",height: "65%",borderRadius: 500,borderWidth: 2,borderColor: 'red'}}>
-    </View>
-    </View>
-    <View style={{flex:0.3,backgroundColor:'green',width:'100%'}}>
-    </View>
-    <View style={{flex:0.2,backgroundColor:'yellow',width:'100%'}}>
-    </View>
-      {/* {!isLapsed ? (
-        <Text style={styles.timerText}>
+    <View style={{width:"52%",height: "50%",borderRadius: 500,borderWidth: 2,borderColor: '#F24448',alignItems:'center',justifyContent:'center'}}>
+      <Text style={styles.timerText}>
           {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
         </Text>
-      ) : (
-        <Text style={styles.timerText}>
-          {String(lapminutes).padStart(2, '0')}:{String(lapseconds).padStart(2, '0')}
-        </Text>
-      )}
-      <TouchableOpacity style={styles.button} onPress={handleStart}>
-        <Text>Start</Text>
+    </View>
+    </View>
+    <View style={{flex:0.3,width:'100%',alignItems:'center'}}>
+      <FlatList
+          style={{width:'100%'}}
+          data={DATA}
+          renderItem={({item}) => <Item min={item.min} sec={item.sec} />}
+          keyExtractor={item => item.id}
+        />
+    </View>
+    <View style={{flex:0.2,width:'100%',flexDirection:'row',alignItems:'center',justifyContent:'space-evenly'}}>
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={handleReset}>
+        <Text style={[styles.timerText, { fontSize: 20 }]}>Reset</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleStop}>
-        <Text>Stop</Text>
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={handleStartStop}>
+        { isStart ? 
+          <Text style={[styles.timerText, { fontSize: 20 }]}>Stop</Text>
+          :
+          <Text style={[styles.timerText, { fontSize: 20 }]}>Start</Text>
+        }
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleLap}>
-        <Text>Lap</Text>
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={handleLap}>
+        <Text style={[styles.timerText, { fontSize: 20 }]}>Lap</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleReset}>
-        <Text>Reset</Text>
-      </TouchableOpacity> */}
+    </View>
     </View>
   );
 };
@@ -85,14 +104,23 @@ const styles = {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor:'#232241'
   },
   timerText: {
     fontSize: 30,
+    color: '#ffffff',
   },
   button: {
-    margin: 10,
+    backgroundColor: '#F24448',
+    width:'25%',
+    height:'25%',
+    alignItems:'center',
+    justifyContent:'center',
+  },
+  item: {
     padding: 10,
-    backgroundColor: 'green',
+    alignItems:'center',
+    marginBottom: '5%',
   },
 };
 
