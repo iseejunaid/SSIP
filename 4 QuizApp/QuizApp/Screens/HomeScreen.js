@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
+import { View, Text, StyleSheet, TouchableOpacity,TextInput } from 'react-native';
 
 const HomeScreen = ({ navigation }) => {
   const [name, setName] = useState('');
+  
   const handleStart = () => {
     navigation.navigate('Quiz', { name });
+    setName('');
   };
 
   return (
@@ -19,6 +20,7 @@ const HomeScreen = ({ navigation }) => {
           style={styles.input}
           placeholder="Your Name"
           placeholderTextColor="#F4F8FF"
+          value={name}
           onChangeText={(text) => setName(text)}
         />
       </View>

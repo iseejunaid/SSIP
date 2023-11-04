@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, Button,StyleSheet,TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet,TouchableOpacity } from 'react-native';
 import {questions} from '../helpers/Questions';
 import OptionButton from '../components/optionButton';
 import { AntDesign } from '@expo/vector-icons';
@@ -9,29 +9,46 @@ const QuizScreen = ({route,navigation}) => {
     const {name} = route.params;
     const [questionIndex, setQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
+    const [flag, setFlag] = useState(false);
     const { question, options } = questions[questionIndex];
     const [correctData,setCorrectData] = useState([]);
 
-  const handleAnswer = (selectedAnswer) => {
-    if (selectedAnswer === questions[questionIndex].correctAnswer) {
-      setScore(score + 10);
-      setCorrectData([...correctData,questionIndex]);
-    }
-    handleNext();
-  };
-
-  const handleNext = () => {
-    if(questionIndex === questions.length - 1){
-        navigation.navigate('Result', { score, name,correctData });
+    const handleAnswer = (selectedAnswer) => {
+        if (selectedAnswer === questions[questionIndex].correctAnswer) {
+          setScore(score + 10);
+        //   setCorrectData([...correctData, questionIndex]);
+        correctData.push(questionIndex);
+        console.log(correctData);
+          if (questionIndex === questions.length - 1) {
+            setFlag(true);
+          }
+        }
+        handleNext();
+    };
+    
+    const handleNext = () => {
+        if (questionIndex !== questions.length - 1) {
+            setQuestionIndex(questionIndex + 1);
+        }
+    };
+    
+    useEffect(() => {
+    if (flag) {
+        navigation.navigate('Result', { score, name, correctData });
+        setFlag(false);
         setQuestionIndex(0);
         setCorrectData([]);
-        setScore(0);
+    }
+    }, [score]);
+      
+      
+  const handlePrev = () => {
+    if(questionIndex === 0){
         return;
     }else{
-        setQuestionIndex(questionIndex + 1);
+        setQuestionIndex(questionIndex - 1);
     }
   }
-
   return (
     <View style={styles.container}>
         <View style={styles.header}>
@@ -47,8 +64,16 @@ const QuizScreen = ({route,navigation}) => {
                 </TouchableOpacity>
             </View>
             <View style={styles.questionContainer}>
-                <Text style={styles.questionheadingtxt}>Question {questionIndex+1}/</Text>
-                <Text style={styles.questionheadingtxt2}>10</Text>
+                <View style={{flexDirection:'row',alignItems:'center'}}>
+                    <TouchableOpacity onPress={handlePrev}>
+                        <AntDesign name="caretleft" size={25} color="#1ED8B6" />
+                    </TouchableOpacity>
+                    <Text style={styles.questionheadingtxt}>Question {questionIndex+1}/</Text>
+                    <Text style={styles.questionheadingtxt2}>10</Text>
+                    <TouchableOpacity onPress={handleNext}>
+                        <AntDesign name="caretright" size={25} color="#1ED8B6" />
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>        
         <View style={styles.body}>
