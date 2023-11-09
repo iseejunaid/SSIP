@@ -10,31 +10,28 @@ import {
 } from "react-native";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
-
 const SignupScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");  
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSignup = async () => {
     if (password === confirmPassword) {
       await createUserWithEmailAndPassword(auth, email, password)
-        .then (async (userCredential) => {
+        .then(async (userCredential) => {
           const user = userCredential.user;
-          await updateProfile(user,{displayName:username})
+          await updateProfile(user, { displayName: username });
           console.log(user);
           Alert.alert("Check Email");
           navigation.popToTop();
+          clearFields();
         })
         .catch((error) => {
           const errorMessage = error.message;
           if (errorMessage === "Firebase: Error (auth/email-already-in-use).") {
             Alert.alert("Email already in use");
-          } else if (
-            errorMessage ===
-            "Firebase: Error (auth/invalid-email)."
-          ) {
+          } else if (errorMessage === "Firebase: Error (auth/invalid-email).") {
             Alert.alert("Invalid Email");
           } else {
             console.log(errorMessage);
@@ -45,8 +42,15 @@ const SignupScreen = ({ navigation }) => {
     }
   };
 
+  const clearFields = () => {
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+  };
   const handleLogin = () => {
     navigation.popToTop();
+    clearFields();
   };
 
   return (
@@ -74,12 +78,14 @@ const SignupScreen = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
             style={styles.input}
+            secureTextEntry={true}
           />
           <TextInput
             placeholder="Confirm Password"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             style={styles.input}
+            secureTextEntry={true}
           />
         </View>
         <View style={styles.buttonContainer}>
