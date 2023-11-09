@@ -15,26 +15,32 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    if(email && password){
+    if (email && password) {
       await signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        let userID = user.uid;
-        let username = user.displayName;
-        navigation.navigate("Home", { userID, username });
-      })
-      .catch((error) => {
-        console.log(error);
-        Alert.alert("Invalid Email or Password");
-      });
-    }else{
+        .then((userCredential) => {
+          const user = userCredential.user;
+          let userID = user.uid;
+          let username = user.displayName;
+          navigation.navigate("Home", { userID, username });
+          clearFields();
+        })
+        .catch((error) => {
+          console.log(error);
+          Alert.alert("Invalid Email or Password");
+        });
+    } else {
       alert("Please fill all the fields");
     }
   };
   const handleSignUp = () => {
     navigation.navigate("SignUp");
+    clearFields();
   };
 
+  const clearFields = () => {
+    setEmail("");
+    setPassword("");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -54,6 +60,7 @@ const LoginScreen = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
             style={styles.input}
+            secureTextEntry={true}
           />
         </View>
         <View style={styles.buttonContainer}>
